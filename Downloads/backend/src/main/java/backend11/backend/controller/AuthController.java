@@ -14,7 +14,11 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/singup")
-    public ResponseEntity<String>
+//    @PostMapping("/singup")
+//    public ResponseEntity<String>
 
+    @PostMapping("/singup")
+    public ResponseEntity<String> signup() {
+        return ResponseEntity.ok("success");
+    }
 }
