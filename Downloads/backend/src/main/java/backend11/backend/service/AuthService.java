@@ -2,7 +2,7 @@ package backend11.backend.service;
 
 import backend11.backend.domain.User;
 import backend11.backend.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
