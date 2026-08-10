@@ -1,4 +1,4 @@
-package com.jisoo._bitproject.member;
+package backend11.backend.dto;
 
 import lombok.Getter;
 

@@ -1,4 +1,8 @@
-package com.jisoo._bitproject.member;
+package backend11.backend.controller;
+
+import backend11.backend.domain.Member;
+import backend11.backend.service.MemberService;
+import backend11.backend.dto.UpdateMemberRequest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

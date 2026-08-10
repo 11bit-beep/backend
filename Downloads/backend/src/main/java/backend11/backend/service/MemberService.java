@@ -1,4 +1,7 @@
-package com.jisoo._bitproject.member;
+package backend11.backend.service;
+
+import backend11.backend.domain.Member;
+import backend11.backend.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
