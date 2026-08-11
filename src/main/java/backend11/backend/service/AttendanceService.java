@@ -15,7 +15,7 @@ public class AttendanceService {
         this.attendanceRepository = attendanceRepository;
     }
 
-    // 출석 체크 기능
+    // 출석 체크
     public Attendance checkIn(Long userId) {
         Attendance attendance = new Attendance(userId);
         return attendanceRepository.save(attendance);

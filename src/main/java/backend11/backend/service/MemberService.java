@@ -33,7 +33,7 @@ public class MemberService {
                 .role(Role.USER)
                 .build();
 
-        // DB에 저장하고 생성된 PK(아이디)를 반환
+
         return memberRepository.save(member).getId();
     }
 
