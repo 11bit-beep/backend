@@ -37,4 +37,6 @@ public class Attendance {
     public void updateCheckOut() {
         this.checkOutAt = LocalDateTime.now();
     }
+
 }
+
