@@ -23,6 +23,12 @@ public class MemberController {
     // 내 정보 수정
     @PutMapping("/{id}")
     public Member updateMember(@PathVariable Long id, @RequestBody UpdateMemberRequest request) {
-        return memberService.updateMember(id, request.getName(), request.getDepartment());
+        return memberService.updateMember(
+                id,
+                request.getName(),
+                request.getGrade(),
+                request.getStudentClass(),
+                request.getNumber()
+        );
     }
 }
