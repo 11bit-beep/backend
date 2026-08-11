@@ -38,4 +38,3 @@ public class Attendance {
         this.checkOutAt = LocalDateTime.now();
     }
 }
-
