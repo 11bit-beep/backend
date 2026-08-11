@@ -22,8 +22,7 @@ public class Attendance {
     private LocalDateTime checkInAt;   // 출석 시간
     private LocalDateTime checkOutAt;  // 퇴실 시간
     private String type;             // 출석 유형
-    private String location;         // 출석 장소
-    private String room;   // 세부 장소
+    private String place;         // 출석 장소
 
     // 출석
     public Attendance(Long userId) {
@@ -31,8 +30,7 @@ public class Attendance {
         this.date = LocalDate.now();
         this.checkInAt = LocalDateTime.now();
         this.type = type;
-        this.location = location;
-        this.room = room;
+        this.place = place;
     }
 
     // 퇴실
