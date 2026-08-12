@@ -1,9 +1,7 @@
 package backend11.backend.domain;
 
-
 import jakarta.persistence.*;
 import lombok.Builder;
-import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,8 +12,9 @@ import lombok.NoArgsConstructor;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(nullable = false, unique = true)
     private String username;
 
@@ -27,5 +26,4 @@ public class User {
         this.username = username;
         this.password = password;
     }
-
 }
