@@ -15,8 +15,11 @@ public class Attendance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     private Long userId;          // 학생 ID
     private LocalDate date;       // 출석 날짜
     private LocalDateTime checkInAt;   // 출석 시간
