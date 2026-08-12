@@ -1,6 +1,10 @@
 package backend11.backend.service;
 
+import backend11.backend.config.JwtAuthenticationFilter;
+import backend11.backend.config.JwtTokenProvider;
 import backend11.backend.domain.User;
+import backend11.backend.dto.LoginRequest;
+import backend11.backend.dto.TokenResponse;
 import backend11.backend.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +18,10 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public Long singup(String username, String password) {
+    public Long signup(String username, String password) {
         if (userRepository.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 아이디 입니다.");
         }
@@ -29,6 +34,16 @@ public class AuthService {
         userRepository.save(user);
         return user.getId();
 
+    }
+    public TokenResponse login(LoginRequest request) {
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디 입니다."));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+        String accessToken = jwtTokenProvider.createToken(user.getUsername());
+        return new TokenResponse(accessToken);
     }
 
 }
