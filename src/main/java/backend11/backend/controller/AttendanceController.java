@@ -25,4 +25,13 @@ public class AttendanceController {
         Attendance attendance = attendanceService.checkIn(userId, request.getType(), request.getPlace());
         return ResponseEntity.ok(attendance);
     }
+
+    // 퇴실 API
+    @PutMapping("/check_out/{userId}")
+    public ResponseEntity<Attendance> checkOut(
+            @PathVariable Long userId
+    ) {
+        Attendance attendance = attendanceService.checkOut(userId);
+        return ResponseEntity.ok(attendance);
+    }
 }

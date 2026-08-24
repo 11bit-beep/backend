@@ -7,6 +7,7 @@ import backend11.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
 
 @Service
 @Transactional
@@ -26,5 +27,21 @@ public class AttendanceService {
         Attendance attendance = new Attendance(user, type, place);
 
         return attendanceRepository.save(attendance);
+    }
+
+    // 퇴실 처리
+    public Attendance checkOut(Long userId) {
+        Attendance attendance = attendanceRepository.findByUserIdAndDate(userId, LocalDate.now());
+
+        if (attendance == null) {
+            throw new IllegalArgumentException("오늘 출석 기록이 없습니다.");
+        }
+
+        if (attendance.getCheckOutAt() != null) {
+            throw new IllegalArgumentException("이미 퇴실 처리되었습니다.");
+        }
+
+        attendance.updateCheckOut();
+        return attendance;
     }
 }
