@@ -1,20 +1,24 @@
 package backend11.backend.controller;
 
 import backend11.backend.domain.Attendance;
+import backend11.backend.dto.AttendanceLookupResponse;
 import backend11.backend.dto.AttendanceRequest;
+import backend11.backend.service.AttendanceLookupService;
 import backend11.backend.service.AttendanceService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/attendance")
+@RequiredArgsConstructor
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
-
-    public AttendanceController(AttendanceService attendanceService) {
-        this.attendanceService = attendanceService;
-    }
+    private final AttendanceLookupService attendanceLookupService;
 
     // 출석 체크 API
     @PostMapping("/check_in/{userId}")
@@ -33,5 +37,30 @@ public class AttendanceController {
     ) {
         Attendance attendance = attendanceService.checkOut(userId);
         return ResponseEntity.ok(attendance);
+    }
+
+    // 반별 출석 조회: 출석 기록이 없는 학생도 ABSENT로 포함한다.
+    @GetMapping("/classes/{grade}/{studentClass}")
+    public ResponseEntity<AttendanceLookupResponse> getByClass(
+            @PathVariable int grade,
+            @PathVariable int studentClass,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        return ResponseEntity.ok(attendanceLookupService.getByClass(grade, studentClass, date));
+    }
+
+    // 실별 출석 조회: 해당 반 명단 중 지정한 실에 출석하지 않은 학생을 ABSENT로 포함한다.
+    @GetMapping("/places/{place}")
+    public ResponseEntity<AttendanceLookupResponse> getByPlace(
+            @PathVariable String place,
+            @RequestParam int grade,
+            @RequestParam int studentClass,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        return ResponseEntity.ok(
+                attendanceLookupService.getByPlace(grade, studentClass, place, date)
+        );
     }
 }
