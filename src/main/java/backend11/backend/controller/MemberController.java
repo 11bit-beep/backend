@@ -1,34 +1,45 @@
 package backend11.backend.controller;
 
 import backend11.backend.domain.Member;
-import backend11.backend.service.MemberService;
 import backend11.backend.dto.UpdateMemberRequest;
+import backend11.backend.service.MemberService;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/members")
 public class MemberController {
 
-    private final MemberService memberService;
+    @Autowired
+    private MemberService memberService;
 
-    // 내 정보 조회
-    @GetMapping("/{id}")
-    public Member getMember(@PathVariable Long id) {
-        return memberService.getMember(id);
+    // 내 정보 가져오기
+    @GetMapping("/me")
+    public Member getMyMember(Authentication authentication) {
+        String username = authentication.getName();
+        Member member = memberService.getMemberByUsername(username);
+        return member;
     }
 
-    // 내 정보 수정
-    @PutMapping("/{id}")
-    public Member updateMember(@PathVariable Long id, @RequestBody UpdateMemberRequest request) {
-        return memberService.updateMember(
-                id,
-                request.getName(),
-                request.getGrade(),
-                request.getStudentClass(),
-                request.getNumber()
-        );
+    // 내 정보 수정하기
+    @PutMapping("/me")
+    public Member updateMyMember(Authentication authentication, @RequestBody UpdateMemberRequest request) {
+
+        String username = authentication.getName();
+
+        String name = request.getName();
+        int grade = request.getGrade();
+        int studentClass = request.getStudentClass();
+        int number = request.getNumber();
+
+        Member updatedMember = memberService.updateMemberByUsername(username, name, grade, studentClass, number);
+
+        return updatedMember;
     }
 }
