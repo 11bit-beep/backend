@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +50,24 @@ public class MemberService {
         Member member = getMember(id);
         member.updateInfo(name, grade, studentClass, number);
 
+        return member;
+    }
+
+    // 내 정보 조회 (아이디로) - 새로 추가
+    public Member getMemberByUsername(String username) {
+        Optional<Member> result = memberRepository.findByUsername(username);
+
+        if (result.isEmpty()) {
+            throw new IllegalArgumentException("회원을 찾을 수 없습니다.");
+        }
+        return result.get();
+    }
+
+    // 내 정보 수정 (아이디로) - 새로 추가
+    @Transactional
+    public Member updateMemberByUsername(String username, String name, int grade, int studentClass, int number) {
+        Member member = getMemberByUsername(username);
+        member.updateInfo(name, grade, studentClass, number);
         return member;
     }
 }
