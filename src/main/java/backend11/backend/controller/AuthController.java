@@ -1,8 +1,11 @@
 package backend11.backend.controller;
 
+import backend11.backend.dto.LoginRequest;
+import backend11.backend.dto.TokenResponse;
 import backend11.backend.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,5 +20,10 @@ public class AuthController {
     @PostMapping("/singup")
     public ResponseEntity<String> signup() {
         return ResponseEntity.ok("success");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 }

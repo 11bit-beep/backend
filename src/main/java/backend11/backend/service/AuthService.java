@@ -1,6 +1,5 @@
 package backend11.backend.service;
 
-import backend11.backend.config.JwtAuthenticationFilter;
 import backend11.backend.config.JwtTokenProvider;
 import backend11.backend.domain.User;
 import backend11.backend.dto.LoginRequest;

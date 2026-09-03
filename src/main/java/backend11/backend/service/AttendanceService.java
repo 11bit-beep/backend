@@ -19,12 +19,12 @@ public class AttendanceService {
     private final UserRepository userRepository;
 
     // 출석하기
-    public Attendance checkIn(Long userId, String type, String place) {
-        User user = userRepository.findById(userId)
+    public Attendance checkIn(String username, String type, String place) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         // 오늘 이미 출석했는지 확인
-        if (attendanceRepository.findByUserIdAndDate(userId, LocalDate.now()) != null) {
+        if (attendanceRepository.findByUserIdAndDate(user.getId(), LocalDate.now()) != null) {
             throw new IllegalArgumentException("ㅇ오늘 이미 출석 처리되었습니다.");
         }
 
@@ -34,9 +34,12 @@ public class AttendanceService {
     }
 
     // 퇴실하기
-    public Attendance checkOut(Long userId) {
+    public Attendance checkOut(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
         Attendance attendance = attendanceRepository.findByUserIdAndDate(
-                userId,
+                user.getId(),
                 LocalDate.now()
         );
 

@@ -8,6 +8,7 @@ import backend11.backend.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -21,21 +22,23 @@ public class AttendanceController {
     private final AttendanceLookupService attendanceLookupService;
 
     // 출석 체크 API
-    @PostMapping("/check_in/{userId}")
+    @PostMapping("/check_in")
     public ResponseEntity<Attendance> checkIn(
-            @PathVariable Long userId,
+            Authentication authentication,
             @RequestBody AttendanceRequest request
     ) {
-        Attendance attendance = attendanceService.checkIn(userId, request.getType(), request.getPlace());
+        Attendance attendance = attendanceService.checkIn(
+                authentication.getName(),
+                request.getType(),
+                request.getPlace()
+        );
         return ResponseEntity.ok(attendance);
     }
 
     // 퇴실 API
-    @PutMapping("/check_out/{userId}")
-    public ResponseEntity<Attendance> checkOut(
-            @PathVariable Long userId
-    ) {
-        Attendance attendance = attendanceService.checkOut(userId);
+    @PutMapping("/check_out")
+    public ResponseEntity<Attendance> checkOut(Authentication authentication) {
+        Attendance attendance = attendanceService.checkOut(authentication.getName());
         return ResponseEntity.ok(attendance);
     }
 
