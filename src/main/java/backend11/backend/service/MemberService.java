@@ -70,4 +70,10 @@ public class MemberService {
         member.updateInfo(name, grade, studentClass, number);
         return member;
     }
+
+    @Transactional
+    public void deleteMemberByUsername(String username) {
+        Member member = getMemberByUsername(username);
+        memberRepository.delete(member);
+    }
 }

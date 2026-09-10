@@ -5,6 +5,7 @@ import backend11.backend.dto.UpdateMemberRequest;
 import backend11.backend.service.MemberService;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,5 +42,12 @@ public class MemberController {
         Member updatedMember = memberService.updateMemberByUsername(username, name, grade, studentClass, number);
 
         return updatedMember;
+    }
+
+    @DeleteMapping("/me")
+    public String deleteMyMember(Authentication authentication) {
+        String username = authentication.getName();
+        memberService.deleteMemberByUsername(username);
+        return "회원탈퇴가 완료되었습니다.";
     }
 }
