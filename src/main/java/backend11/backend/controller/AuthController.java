@@ -1,6 +1,7 @@
 package backend11.backend.controller;
 
 import backend11.backend.dto.LoginRequest;
+import backend11.backend.dto.SignupRequest;
 import backend11.backend.dto.TokenResponse;
 import backend11.backend.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -11,15 +12,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/singup")
-    public ResponseEntity<String> signup() {
-        return ResponseEntity.ok("success");
+    @PostMapping("/signup")
+    public ResponseEntity<Long> signup(@RequestBody SignupRequest request) {
+        Long memberId = authService.signup(request);
+        return ResponseEntity.ok(memberId);
     }
 
     @PostMapping("/login")
