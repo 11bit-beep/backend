@@ -35,12 +35,9 @@ public class AttendanceLookupService {
     }
 
     public AttendanceLookupResponse getByPlace(
-            int grade,
-            int studentClass,
             String place,
             LocalDate date
     ) {
-        validateClassScope(grade, studentClass);
         if (place == null || place.isBlank()) {
             throw new IllegalArgumentException("출석 실을 입력해 주세요.");
         }
@@ -48,8 +45,6 @@ public class AttendanceLookupService {
         LocalDate lookupDate = date == null ? LocalDate.now() : date;
         String normalizedPlace = place.trim();
         List<AttendanceJoinRow> rows = attendanceRepository.findPlaceAttendanceRows(
-                grade,
-                studentClass,
                 normalizedPlace,
                 lookupDate
         );

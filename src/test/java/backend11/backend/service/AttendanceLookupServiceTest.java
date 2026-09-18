@@ -44,6 +44,13 @@ class AttendanceLookupServiceTest {
                 .password("password")
                 .build());
         attendanceRepository.save(new Attendance(presentUser, "NORMAL", "LAB-1"));
+
+        saveMember("other-class", "다른 반 출석 학생", 1, 3, 1);
+        User otherClassUser = userRepository.save(User.builder()
+                .username("other-class")
+                .password("password")
+                .build());
+        attendanceRepository.save(new Attendance(otherClassUser, "NORMAL", "LAB-1"));
     }
 
     @Test
@@ -63,33 +70,44 @@ class AttendanceLookupServiceTest {
     }
 
     @Test
-    void 실별_조회는_해당_실에_출석한_기록만_출석으로_판정한다() {
+    void 실별_조회는_반과_관계없이_해당_실에_출석한_학생만_반환한다() {
         AttendanceLookupResponse labOne = attendanceLookupService.getByPlace(
-                1,
-                2,
                 "LAB-1",
                 LocalDate.now()
         );
         AttendanceLookupResponse labTwo = attendanceLookupService.getByPlace(
-                1,
-                2,
                 "LAB-2",
                 LocalDate.now()
         );
 
-        assertThat(labOne.attendedCount()).isEqualTo(1);
-        assertThat(labOne.absentCount()).isEqualTo(1);
+        assertThat(labOne.totalCount()).isEqualTo(2);
+        assertThat(labOne.attendedCount()).isEqualTo(2);
+        assertThat(labOne.absentCount()).isZero();
+        assertThat(labOne.students())
+                .extracting(student -> student.name())
+                .containsExactly("출석 학생", "다른 반 출석 학생");
+        assertThat(labTwo.totalCount()).isZero();
         assertThat(labTwo.attendedCount()).isZero();
-        assertThat(labTwo.absentCount()).isEqualTo(2);
+        assertThat(labTwo.absentCount()).isZero();
     }
 
     private void saveMember(String username, String name, int number) {
+        saveMember(username, name, 1, 2, number);
+    }
+
+    private void saveMember(
+            String username,
+            String name,
+            int grade,
+            int studentClass,
+            int number
+    ) {
         memberRepository.save(Member.builder()
                 .username(username)
                 .password("password")
                 .name(name)
-                .grade(1)
-                .studentClass(2)
+                .grade(grade)
+                .studentClass(studentClass)
                 .number(number)
                 .role(Role.USER)
                 .build());

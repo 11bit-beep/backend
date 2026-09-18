@@ -1,5 +1,7 @@
 package backend11.backend.controller;
 
+import backend11.backend.config.JwtTokenProvider;
+import backend11.backend.config.SecurityConfig;
 import backend11.backend.domain.Attendance;
 import backend11.backend.dto.AttendanceRequest;
 import backend11.backend.dto.LoginRequest;
@@ -13,7 +15,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -76,5 +81,27 @@ class AuthenticatedApiControllerTest {
 
         assertThat(response.getBody()).isSameAs(attendance);
         verify(attendanceService).checkOut("student");
+    }
+
+    @Test
+    void 개발용_프론트엔드_주소만_CORS로_허용한다() {
+        SecurityConfig securityConfig = new SecurityConfig(mock(JwtTokenProvider.class));
+        CorsConfigurationSource source = securityConfig.corsConfigurationSource();
+        CorsConfiguration configuration = source.getCorsConfiguration(
+                new MockHttpServletRequest("OPTIONS", "/api/auth/login")
+        );
+
+        assertThat(configuration).isNotNull();
+        assertThat(configuration.checkOrigin("http://127.0.0.1:5500"))
+                .isEqualTo("http://127.0.0.1:5500");
+        assertThat(configuration.checkOrigin("http://localhost:5500"))
+                .isEqualTo("http://localhost:5500");
+        assertThat(configuration.checkOrigin("https://untrusted.example"))
+                .isNull();
+        assertThat(configuration.getAllowedMethods())
+                .containsExactlyInAnyOrder("GET", "POST", "PUT", "DELETE", "OPTIONS");
+        assertThat(configuration.getAllowedHeaders())
+                .containsExactlyInAnyOrder("Authorization", "Content-Type", "Accept");
+        assertThat(configuration.getAllowCredentials()).isTrue();
     }
 }

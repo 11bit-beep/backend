@@ -61,18 +61,14 @@ public class AttendanceController {
         return ResponseEntity.ok(attendanceLookupService.getByClass(grade, studentClass, date));
     }
 
-    // 실별 출석 조회: 해당 반 명단 중 지정한 실에 출석하지 않은 학생을 ABSENT로 포함한다.
+    // 실별 출석 조회: 지정한 실에 출석 기록이 있는 학생만 조회한다.
     @GetMapping("/places/{place}")
-    @Operation(summary = "실별 출석 조회", description = "지정한 장소의 출석 현황을 조회합니다. 해당 반 명단 중 기록이 없는 학생도 ABSENT로 포함됩니다.")
+    @Operation(summary = "실별 출석 조회", description = "지정한 장소에 출석 기록이 있는 모든 학생을 조회합니다.")
     public ResponseEntity<AttendanceLookupResponse> getByPlace(
             @PathVariable String place,
-            @RequestParam int grade,
-            @RequestParam int studentClass,
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-        return ResponseEntity.ok(
-                attendanceLookupService.getByPlace(grade, studentClass, place, date)
-        );
+        return ResponseEntity.ok(attendanceLookupService.getByPlace(place, date));
     }
 }
