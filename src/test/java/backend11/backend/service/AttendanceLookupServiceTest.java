@@ -6,6 +6,7 @@ import backend11.backend.domain.Role;
 import backend11.backend.domain.User;
 import backend11.backend.dto.AttendanceLookupResponse;
 import backend11.backend.dto.AttendanceStatus;
+import backend11.backend.dto.AttendanceSummaryResponse;
 import backend11.backend.repository.AttendanceRepository;
 import backend11.backend.repository.MemberRepository;
 import backend11.backend.repository.UserRepository;
@@ -89,6 +90,29 @@ class AttendanceLookupServiceTest {
         assertThat(labTwo.totalCount()).isZero();
         assertThat(labTwo.attendedCount()).isZero();
         assertThat(labTwo.absentCount()).isZero();
+    }
+
+    @Test
+    void 전체_요약은_1학년_1반부터_4반과_세_개의_실을_반환한다() {
+        AttendanceSummaryResponse response = attendanceLookupService.getSummary(LocalDate.now());
+
+        assertThat(response.classes())
+                .extracting(summary -> summary.studentClass())
+                .containsExactly(1, 2, 3, 4);
+        assertThat(response.classes().get(0).totalCount()).isZero();
+        assertThat(response.classes().get(1).totalCount()).isEqualTo(2);
+        assertThat(response.classes().get(1).attendedCount()).isEqualTo(1);
+        assertThat(response.classes().get(1).absentCount()).isEqualTo(1);
+        assertThat(response.classes().get(2).totalCount()).isEqualTo(1);
+        assertThat(response.classes().get(2).attendedCount()).isEqualTo(1);
+        assertThat(response.classes().get(3).totalCount()).isZero();
+
+        assertThat(response.places())
+                .extracting(summary -> summary.place())
+                .containsExactly("LAB-1", "LAB-2", "LAB-3");
+        assertThat(response.places().get(0).attendedCount()).isEqualTo(2);
+        assertThat(response.places().get(1).attendedCount()).isZero();
+        assertThat(response.places().get(2).attendedCount()).isZero();
     }
 
     private void saveMember(String username, String name, int number) {

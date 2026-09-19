@@ -3,6 +3,7 @@ package backend11.backend.controller;
 import backend11.backend.domain.Attendance;
 import backend11.backend.dto.AttendanceLookupResponse;
 import backend11.backend.dto.AttendanceRequest;
+import backend11.backend.dto.AttendanceSummaryResponse;
 import backend11.backend.service.AttendanceLookupService;
 import backend11.backend.service.AttendanceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -70,5 +71,18 @@ public class AttendanceController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
         return ResponseEntity.ok(attendanceLookupService.getByPlace(place, date));
+    }
+
+    // 전체 출석 요약: 1학년 1~4반과 LAB-1~LAB-3의 출석 현황을 한 번에 조회한다.
+    @GetMapping("/summary")
+    @Operation(
+            summary = "전체 출석 요약 조회",
+            description = "1학년 1~4반의 전체·출석·결석 인원과 LAB-1~LAB-3의 출석 인원을 조회합니다."
+    )
+    public ResponseEntity<AttendanceSummaryResponse> getSummary(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        return ResponseEntity.ok(attendanceLookupService.getSummary(date));
     }
 }

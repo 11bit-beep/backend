@@ -1,9 +1,12 @@
 package backend11.backend.service;
 
 import backend11.backend.dto.AttendanceJoinRow;
+import backend11.backend.dto.AttendanceClassSummary;
 import backend11.backend.dto.AttendanceLookupResponse;
+import backend11.backend.dto.AttendancePlaceSummary;
 import backend11.backend.dto.AttendanceStatus;
 import backend11.backend.dto.AttendanceStudentResponse;
+import backend11.backend.dto.AttendanceSummaryResponse;
 import backend11.backend.repository.AttendanceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +22,32 @@ import java.util.Map;
 @Transactional(readOnly = true)
 public class AttendanceLookupService {
 
+    private static final int SUMMARY_GRADE = 1;
+    private static final List<Integer> SUMMARY_CLASSES = List.of(1, 2, 3, 4);
+    private static final List<String> SUMMARY_PLACES = List.of("LAB-1", "LAB-2", "LAB-3");
+
     private final AttendanceRepository attendanceRepository;
+
+    public AttendanceSummaryResponse getSummary(LocalDate date) {
+        LocalDate lookupDate = date == null ? LocalDate.now() : date;
+
+        List<AttendanceClassSummary> classes = SUMMARY_CLASSES.stream()
+                .map(studentClass -> toClassSummary(
+                        SUMMARY_GRADE,
+                        studentClass,
+                        getByClass(SUMMARY_GRADE, studentClass, lookupDate)
+                ))
+                .toList();
+
+        List<AttendancePlaceSummary> places = SUMMARY_PLACES.stream()
+                .map(place -> new AttendancePlaceSummary(
+                        place,
+                        getByPlace(place, lookupDate).attendedCount()
+                ))
+                .toList();
+
+        return new AttendanceSummaryResponse(lookupDate, classes, places);
+    }
 
     public AttendanceLookupResponse getByClass(int grade, int studentClass, LocalDate date) {
         validateClassScope(grade, studentClass);
@@ -100,6 +128,20 @@ public class AttendanceLookupService {
                 row.checkOutAt(),
                 row.type(),
                 row.place()
+        );
+    }
+
+    private AttendanceClassSummary toClassSummary(
+            int grade,
+            int studentClass,
+            AttendanceLookupResponse response
+    ) {
+        return new AttendanceClassSummary(
+                grade,
+                studentClass,
+                response.totalCount(),
+                response.attendedCount(),
+                response.absentCount()
         );
     }
 
