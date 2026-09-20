@@ -25,10 +25,11 @@ public class AttendanceService {
 
         // 오늘 이미 출석했는지 확인
         if (attendanceRepository.findByUserIdAndDate(user.getId(), LocalDate.now()) != null) {
-            throw new IllegalArgumentException("ㅇ오늘 이미 출석 처리되었습니다.");
+            throw new IllegalArgumentException("오늘 이미 출석 처리되었습니다.");
         }
 
-        Attendance attendance = new Attendance(user, type, place);
+        String normalizedPlace = AttendancePlaceNormalizer.normalize(place);
+        Attendance attendance = new Attendance(user, type, normalizedPlace);
 
         return attendanceRepository.save(attendance);
     }

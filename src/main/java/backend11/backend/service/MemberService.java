@@ -53,7 +53,7 @@ public class MemberService {
         return member;
     }
 
-    // 내 정보 조회 (아이디로) - 새로 추가
+    // 내 정보 조회
     public Member getMemberByUsername(String username) {
         Optional<Member> result = memberRepository.findByUsername(username);
 
@@ -63,7 +63,7 @@ public class MemberService {
         return result.get();
     }
 
-    // 내 정보 수정 (아이디로) - 새로 추가
+    // 내 정보 수정
     @Transactional
     public Member updateMemberByUsername(String username, String name, int grade, int studentClass, int number) {
         Member member = getMemberByUsername(username);
