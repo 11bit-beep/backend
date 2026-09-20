@@ -44,11 +44,11 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
             join User u on u.username = m.username
             join Attendance a on a.user = u
             where a.date = :date
-              and a.place = :place
+              and upper(replace(replace(replace(a.place, '-', ''), ' ', ''), '실', '')) = :placeKey
             order by m.grade asc, m.studentClass asc, m.number asc, a.checkInAt desc
             """)
     List<AttendanceJoinRow> findPlaceAttendanceRows(
-            @Param("place") String place,
+            @Param("placeKey") String placeKey,
             @Param("date") LocalDate date
     );
 }

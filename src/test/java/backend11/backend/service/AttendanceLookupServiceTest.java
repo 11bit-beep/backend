@@ -51,7 +51,8 @@ class AttendanceLookupServiceTest {
                 .username("other-class")
                 .password("password")
                 .build());
-        attendanceRepository.save(new Attendance(otherClassUser, "NORMAL", "LAB-1"));
+        // 예전에 다른 표기로 저장된 데이터도 같은 실로 조회되어야 한다.
+        attendanceRepository.save(new Attendance(otherClassUser, "NORMAL", "lab 1실"));
     }
 
     @Test
@@ -73,7 +74,7 @@ class AttendanceLookupServiceTest {
     @Test
     void 실별_조회는_반과_관계없이_해당_실에_출석한_학생만_반환한다() {
         AttendanceLookupResponse labOne = attendanceLookupService.getByPlace(
-                "LAB-1",
+                "LAB1",
                 LocalDate.now()
         );
         AttendanceLookupResponse labTwo = attendanceLookupService.getByPlace(
@@ -87,6 +88,9 @@ class AttendanceLookupServiceTest {
         assertThat(labOne.students())
                 .extracting(student -> student.name())
                 .containsExactly("출석 학생", "다른 반 출석 학생");
+        assertThat(labOne.students())
+                .extracting(student -> student.place())
+                .containsOnly("LAB-1");
         assertThat(labTwo.totalCount()).isZero();
         assertThat(labTwo.attendedCount()).isZero();
         assertThat(labTwo.absentCount()).isZero();
