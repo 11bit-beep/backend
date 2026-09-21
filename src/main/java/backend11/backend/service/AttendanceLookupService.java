@@ -66,14 +66,11 @@ public class AttendanceLookupService {
             String place,
             LocalDate date
     ) {
-        if (place == null || place.isBlank()) {
-            throw new IllegalArgumentException("출석 실을 입력해 주세요.");
-        }
-
         LocalDate lookupDate = date == null ? LocalDate.now() : date;
-        String normalizedPlace = place.trim();
+        String normalizedPlace = AttendancePlaceNormalizer.normalize(place);
+        String placeKey = AttendancePlaceNormalizer.toComparisonKey(normalizedPlace);
         List<AttendanceJoinRow> rows = attendanceRepository.findPlaceAttendanceRows(
-                normalizedPlace,
+                placeKey,
                 lookupDate
         );
 
@@ -127,7 +124,7 @@ public class AttendanceLookupService {
                 row.checkInAt(),
                 row.checkOutAt(),
                 row.type(),
-                row.place()
+                row.place() == null ? null : AttendancePlaceNormalizer.normalize(row.place())
         );
     }
 
