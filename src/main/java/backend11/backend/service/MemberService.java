@@ -71,6 +71,12 @@ public class MemberService {
         member.updateInfo(name, grade, studentClass, number);
         return member;
     }
+    // 회원 탈퇴 (아이디)
+    @Transactional
+    public void deleteMemberByUsername(String username) {
+        Member member = getMemberByUsername(username);
+        memberRepository.delete(member);
+    }
 
     // 내 정보 수정 (아이디)
     @Transactional
