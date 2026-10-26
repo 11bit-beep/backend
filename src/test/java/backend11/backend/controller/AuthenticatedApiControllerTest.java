@@ -46,7 +46,7 @@ class AuthenticatedApiControllerTest {
     @Test
     void 로그인은_생성된_액세스_토큰을_응답한다() {
         LoginRequest request = mock(LoginRequest.class);
-        TokenResponse tokenResponse = new TokenResponse("access-token");
+        TokenResponse tokenResponse = new TokenResponse("access-token", "ROLE_STUDENT");
         when(authService.login(request)).thenReturn(tokenResponse);
 
         ResponseEntity<TokenResponse> response = authController.login(request);
