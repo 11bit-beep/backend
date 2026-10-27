@@ -3,6 +3,7 @@ package backend11.backend.controller;
 import backend11.backend.domain.Attendance;
 import backend11.backend.dto.AttendanceLookupResponse;
 import backend11.backend.dto.AttendanceRequest;
+import backend11.backend.dto.AttendanceResponse;
 import backend11.backend.dto.AttendanceSummaryResponse;
 import backend11.backend.service.AttendanceLookupService;
 import backend11.backend.service.AttendanceService;
@@ -30,7 +31,7 @@ public class AttendanceController {
     // 출석 체크 API
     @PostMapping("/check_in")
     @Operation(summary = "출석 처리", description = "로그인한 사용자의 출석을 기록합니다.")
-    public ResponseEntity<Attendance> checkIn(
+    public ResponseEntity<AttendanceResponse> checkIn(
             Authentication authentication,
             @RequestBody AttendanceRequest request
     ) {
@@ -39,15 +40,15 @@ public class AttendanceController {
                 request.getType(),
                 request.getPlace()
         );
-        return ResponseEntity.ok(attendance);
+        return ResponseEntity.ok(AttendanceResponse.from(attendance));
     }
 
     // 퇴실 API
     @PutMapping("/check_out")
     @Operation(summary = "퇴실 처리", description = "로그인한 사용자의 당일 출석 기록에 퇴실 시간을 저장합니다.")
-    public ResponseEntity<Attendance> checkOut(Authentication authentication) {
+    public ResponseEntity<AttendanceResponse> checkOut(Authentication authentication) {
         Attendance attendance = attendanceService.checkOut(authentication.getName());
-        return ResponseEntity.ok(attendance);
+        return ResponseEntity.ok(AttendanceResponse.from(attendance));
     }
 
     // 반별 출석 조회: 출석 기록이 없는 학생도 ABSENT로 포함한다.
