@@ -61,8 +61,7 @@ public class AuthService {
     // 신규 선생님 회원가입
     @Transactional
     public Long teacherSignup(TeacherSignupRequest request) {
-        if (request.getTeacherCode() == null
-                || !teacherCode.equals(request.getTeacherCode())) {
+        if (!teacherCode.equals(request.getTeacherCode())) {
             throw new IllegalArgumentException("교사 코드가 올바르지 않습니다.");
         }
 
@@ -99,10 +98,6 @@ public class AuthService {
     }
 
     private void checkDuplicateUsername(String username) {
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("아이디를 입력해주세요.");
-        }
-
         if (userRepository.findByUsername(username).isPresent()
                 || memberRepository.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException(
