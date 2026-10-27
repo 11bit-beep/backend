@@ -9,6 +9,7 @@ import backend11.backend.service.AttendanceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,7 +33,7 @@ public class AttendanceController {
     @Operation(summary = "출석 처리", description = "로그인한 사용자의 출석을 기록합니다.")
     public ResponseEntity<Attendance> checkIn(
             Authentication authentication,
-            @RequestBody AttendanceRequest request
+            @Valid @RequestBody AttendanceRequest request
     ) {
         Attendance attendance = attendanceService.checkIn(
                 authentication.getName(),
