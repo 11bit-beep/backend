@@ -2,7 +2,6 @@ package backend11.backend.service;
 
 import backend11.backend.domain.Attendance;
 import backend11.backend.domain.Member;
-import backend11.backend.domain.Role;
 import backend11.backend.domain.User;
 import backend11.backend.dto.AttendanceLookupResponse;
 import backend11.backend.dto.AttendanceStatus;
@@ -37,20 +36,12 @@ class AttendanceLookupServiceTest {
     void setUp() {
         attendanceLookupService = new AttendanceLookupService(attendanceRepository);
 
-        saveMember("present", "출석 학생", 1);
+        User presentUser = saveMember("present", "출석 학생", 1);
         saveMember("absent", "미출석 학생", 2);
 
-        User presentUser = userRepository.save(User.builder()
-                .username("present")
-                .password("password")
-                .build());
         attendanceRepository.save(new Attendance(presentUser, "NORMAL", "LAB-1"));
 
-        saveMember("other-class", "다른 반 출석 학생", 1, 3, 1);
-        User otherClassUser = userRepository.save(User.builder()
-                .username("other-class")
-                .password("password")
-                .build());
+        User otherClassUser = saveMember("other-class", "다른 반 출석 학생", 1, 3, 1);
         // 예전에 다른 표기로 저장된 데이터도 같은 실로 조회되어야 한다.
         attendanceRepository.save(new Attendance(otherClassUser, "NORMAL", "lab 1실"));
     }
@@ -119,25 +110,28 @@ class AttendanceLookupServiceTest {
         assertThat(response.places().get(2).attendedCount()).isZero();
     }
 
-    private void saveMember(String username, String name, int number) {
-        saveMember(username, name, 1, 2, number);
+    private User saveMember(String username, String name, int number) {
+        return saveMember(username, name, 1, 2, number);
     }
 
-    private void saveMember(
+    private User saveMember(
             String username,
             String name,
             int grade,
             int studentClass,
             int number
     ) {
-        memberRepository.save(Member.builder()
+        User user = userRepository.save(User.builder()
                 .username(username)
                 .password("password")
+                .build());
+        memberRepository.save(Member.builder()
+                .user(user)
                 .name(name)
                 .grade(grade)
                 .studentClass(studentClass)
                 .number(number)
-                .role(Role.USER)
                 .build());
+        return user;
     }
 }

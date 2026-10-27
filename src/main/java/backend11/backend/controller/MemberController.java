@@ -1,6 +1,7 @@
 package backend11.backend.controller;
 
 import backend11.backend.domain.Member;
+import backend11.backend.dto.MemberProfileResponse;
 import backend11.backend.dto.UpdateMemberRequest;
 import backend11.backend.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,16 +29,16 @@ public class MemberController {
     // 내 정보 가져오기
     @GetMapping("/me")
     @Operation(summary = "내 정보 조회", description = "로그인한 사용자의 회원 정보를 조회합니다.")
-    public Member getMyMember(Authentication authentication) {
+    public MemberProfileResponse getMyMember(Authentication authentication) {
         String username = authentication.getName();
         Member member = memberService.getMemberByUsername(username);
-        return member;
+        return MemberProfileResponse.from(member);
     }
 
     // 내 정보 수정하기
     @PutMapping("/me")
     @Operation(summary = "내 정보 수정", description = "로그인한 사용자의 이름, 학년, 반, 번호를 수정합니다.")
-    public Member updateMyMember(Authentication authentication, @RequestBody UpdateMemberRequest request) {
+    public MemberProfileResponse updateMyMember(Authentication authentication, @RequestBody UpdateMemberRequest request) {
 
         String username = authentication.getName();
 
@@ -48,7 +49,7 @@ public class MemberController {
 
         Member updatedMember = memberService.updateMemberByUsername(username, name, grade, studentClass, number);
 
-        return updatedMember;
+        return MemberProfileResponse.from(updatedMember);
     }
 
     @DeleteMapping("/me")
