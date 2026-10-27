@@ -1,4 +1,4 @@
-package backend11.backend.controller;
+package backend11.backend.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
