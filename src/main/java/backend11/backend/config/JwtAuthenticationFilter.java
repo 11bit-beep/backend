@@ -1,5 +1,6 @@
 package backend11.backend.config;
 
+import backend11.backend.security.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,10 +16,10 @@ import java.util.List;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenProvider tokenProvider;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public JwtAuthenticationFilter(TokenProvider tokenProvider) {
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
@@ -33,9 +34,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             String token = bearerToken.substring(7);
 
-            if (jwtTokenProvider.validateToken(token)) {
-                String username = jwtTokenProvider.getUsername(token);
-                String role = jwtTokenProvider.getRole(token);
+            if (tokenProvider.validateToken(token)) {
+                String username = tokenProvider.getUsername(token);
+                String role = tokenProvider.getRole(token);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(

@@ -1,6 +1,7 @@
 package backend11.backend.config;
 
 import backend11.backend.domain.Role;
+import backend11.backend.security.TokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -13,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
-public class JwtTokenProvider {
+public class JwtTokenProvider implements TokenProvider {
 
     private final SecretKey key;
     private final long validityInMilliseconds;
@@ -28,6 +29,7 @@ public class JwtTokenProvider {
         this.validityInMilliseconds = validityInMilliseconds;
     }
 
+    @Override
     public String createToken(String username, Role role) {
         Date now = new Date();
         Date expiry = new Date(
@@ -43,10 +45,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    @Override
     public String getUsername(String token) {
         return getClaims(token).getSubject();
     }
 
+    @Override
     public String getRole(String token) {
         return getClaims(token).get("role", String.class);
     }
@@ -59,6 +63,7 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
+    @Override
     public boolean validateToken(String token) {
         try {
             getClaims(token);
