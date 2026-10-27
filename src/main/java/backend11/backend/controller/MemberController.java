@@ -6,6 +6,7 @@ import backend11.backend.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +41,7 @@ public class MemberController {
     @Operation(summary = "내 정보 수정", description = "로그인한 사용자의 이름, 학년, 반, 번호를 수정합니다.")
     public ResponseEntity<Member> updateMyMember(
             Authentication authentication,
-            @RequestBody UpdateMemberRequest request
+            @Valid @RequestBody UpdateMemberRequest request
     ) {
 
         String username = authentication.getName();
