@@ -1,6 +1,6 @@
 package backend11.backend.service;
 
-import backend11.backend.config.JwtTokenProvider;
+import backend11.backend.security.TokenProvider;
 import backend11.backend.domain.Member;
 import backend11.backend.domain.Role;
 import backend11.backend.domain.User;
@@ -24,7 +24,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenProvider tokenProvider;
 
     @Value("${app.teacher-code}")
     private String teacherCode;
@@ -90,7 +90,7 @@ public class AuthService {
                     "비밀번호가 일치하지 않습니다.");
         }
 
-        String accessToken = jwtTokenProvider.createToken(
+        String accessToken = tokenProvider.createToken(
                 user.getUsername(),
                 user.getRole()
         );
