@@ -1,6 +1,6 @@
 package backend11.backend.service;
 
-import backend11.backend.config.JwtTokenProvider;
+import backend11.backend.security.TokenProvider;
 import backend11.backend.domain.Member;
 import backend11.backend.domain.Role;
 import backend11.backend.domain.User;
@@ -24,7 +24,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenProvider tokenProvider;
 
     @Value("${app.teacher-code}")
     private String teacherCode;
@@ -61,8 +61,7 @@ public class AuthService {
     // 신규 선생님 회원가입
     @Transactional
     public Long teacherSignup(TeacherSignupRequest request) {
-        if (request.getTeacherCode() == null
-                || !teacherCode.equals(request.getTeacherCode())) {
+        if (!teacherCode.equals(request.getTeacherCode())) {
             throw new IllegalArgumentException("교사 코드가 올바르지 않습니다.");
         }
 
@@ -90,7 +89,7 @@ public class AuthService {
                     "비밀번호가 일치하지 않습니다.");
         }
 
-        String accessToken = jwtTokenProvider.createToken(
+        String accessToken = tokenProvider.createToken(
                 user.getUsername(),
                 user.getRole()
         );
@@ -99,10 +98,6 @@ public class AuthService {
     }
 
     private void checkDuplicateUsername(String username) {
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("아이디를 입력해주세요.");
-        }
-
         if (userRepository.findByUsername(username).isPresent()
                 || memberRepository.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException(
