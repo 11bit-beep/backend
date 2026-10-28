@@ -60,10 +60,10 @@ public class MemberController {
     }
 
     @DeleteMapping("/me")
-    @Operation(summary = "회원 탈퇴", description = "로그인한 사용자의 회원 정보를 삭제합니다.")
+    @Operation(summary = "회원 탈퇴", description = "로그인한 계정과 연결된 회원 정보 및 출석 기록을 삭제합니다.")
     public ResponseEntity<String> deleteMyMember(Authentication authentication) {
         String username = authentication.getName();
-        memberService.deleteMemberByUsername(username);
+        memberService.deleteAccountByUsername(username);
         return ResponseEntity.ok("회원탈퇴가 완료되었습니다.");
     }
 }

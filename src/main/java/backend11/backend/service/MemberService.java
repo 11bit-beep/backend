@@ -42,13 +42,14 @@ public class MemberService {
         member.updateInfo(name, grade, studentClass, number);
         return member;
     }
-    // 회원 탈퇴 (아이디)
+    // 로그인 계정과 연결된 회원 정보 및 출석 기록을 함께 삭제한다.
     @Transactional
-    public void deleteMemberByUsername(String username) {
-        Member member = getMemberByUsername(username);
-        User user = member.getUser();
+    public void deleteAccountByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
         attendanceRepository.deleteAllByUser_Id(user.getId());
-        memberRepository.delete(member);
+        memberRepository.findByUser_Username(username).ifPresent(memberRepository::delete);
         memberRepository.flush();
         userRepository.delete(user);
     }
