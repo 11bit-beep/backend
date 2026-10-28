@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,16 +32,19 @@ public class MemberController {
     // 내 정보 가져오기
     @GetMapping("/me")
     @Operation(summary = "내 정보 조회", description = "로그인한 사용자의 회원 정보를 조회합니다.")
-    public Member getMyMember(Authentication authentication) {
+    public ResponseEntity<Member> getMyMember(Authentication authentication) {
         String username = authentication.getName();
         Member member = memberService.getMemberByUsername(username);
-        return member;
+        return ResponseEntity.ok(member);
     }
 
     // 내 정보 수정하기
     @PutMapping("/me")
     @Operation(summary = "내 정보 수정", description = "로그인한 사용자의 이름, 학년, 반, 번호를 수정합니다.")
-    public Member updateMyMember(Authentication authentication, @Valid @RequestBody UpdateMemberRequest request) {
+    public ResponseEntity<Member> updateMyMember(
+            Authentication authentication,
+            @Valid @RequestBody UpdateMemberRequest request
+    ) {
 
         String username = authentication.getName();
 
@@ -51,14 +55,14 @@ public class MemberController {
 
         Member updatedMember = memberService.updateMemberByUsername(username, name, grade, studentClass, number);
 
-        return updatedMember;
+        return ResponseEntity.ok(updatedMember);
     }
 
     @DeleteMapping("/me")
     @Operation(summary = "회원 탈퇴", description = "로그인한 사용자의 회원 정보를 삭제합니다.")
-    public String deleteMyMember(Authentication authentication) {
+    public ResponseEntity<String> deleteMyMember(Authentication authentication) {
         String username = authentication.getName();
         memberService.deleteMemberByUsername(username);
-        return "회원탈퇴가 완료되었습니다.";
+        return ResponseEntity.ok("회원탈퇴가 완료되었습니다.");
     }
 }
