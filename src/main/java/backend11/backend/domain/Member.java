@@ -5,60 +5,61 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
-
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "members")
+@Table(
+        name = "members",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_member_identity",
+                columnNames = {"grade", "student_class", "number", "name"}
+        )
+)
 public class Member {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private Long  id;
     @Column(nullable = false, unique = true)
-    private String username; //ID
+    private String username; // ID
 
     @Column(nullable = false)
-    private String password; //비번
+    private String password; // 비번
 
     @Column(nullable = false)
-    private String name; //이름
+    private String name; // 이름
 
     @Column(nullable = false)
-    private int grade; //학년
+    private int grade; // 학년
 
     @Column(nullable = false)
-    private int studentClass; //반
+    private int studentClass; // 반
 
     @Column(nullable = false)
-    private int number;
+    private int number; // 번호
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
-
-
     @Builder
-    public Member(String username, String password, String name, int grade, int studentClass, int number, Role role,String department) {
+    public Member(String username, String password, String name,
+                  int grade, int studentClass, int number, Role role) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.grade = grade;
         this.studentClass = studentClass;
         this.number = number;
-
-
         this.role = role;
     }
 
     // 정보 수정 메서드
-    public void updateInfo(String name, int grade,int studentClass, int number)  {
+    public void updateInfo(String name, int grade, int studentClass, int number) {
         this.name = name;
         this.grade = grade;
         this.studentClass = studentClass;
         this.number = number;
     }
-
 }

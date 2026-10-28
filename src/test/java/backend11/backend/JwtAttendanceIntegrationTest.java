@@ -59,6 +59,24 @@ class JwtAttendanceIntegrationTest {
     }
 
     @Test
+    void 교사_회원가입이_스웨거에_표시된다() throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl("/v3/api-docs")))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(
+                request,
+                HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.body())
+                .contains("\"/api/auth/teacher/signup\"")
+                .contains("\"summary\":\"선생님 회원가입\"");
+    }
+
+    @Test
     void 로그인_토큰이_있어야_본인_출석을_처리할_수_있다() throws Exception {
         HttpResponse<String> anonymousResponse = sendCheckIn(null);
         assertThat(anonymousResponse.statusCode()).isIn(401, 403);
