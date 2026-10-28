@@ -73,11 +73,26 @@ class MemberAccountPersistenceTest {
                 .build());
         attendanceRepository.save(new Attendance(user, "NORMAL", "LAB-1"));
 
-        memberService.deleteMemberByUsername("student");
+        memberService.deleteAccountByUsername("student");
         userRepository.flush();
 
         assertThat(memberRepository.findByUser_Username("student")).isEmpty();
         assertThat(userRepository.findByUsername("student")).isEmpty();
         assertThat(attendanceRepository.count()).isZero();
+    }
+
+    @Test
+    void 교사도_회원_정보가_없어도_로그인_계정을_삭제할_수_있다() {
+        userRepository.save(User.builder()
+                .username("teacher")
+                .password("encoded-password")
+                .name("선생님")
+                .role(Role.TEACHER)
+                .build());
+
+        memberService.deleteAccountByUsername("teacher");
+        userRepository.flush();
+
+        assertThat(userRepository.findByUsername("teacher")).isEmpty();
     }
 }
