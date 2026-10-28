@@ -1,5 +1,6 @@
 package backend11.backend.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,11 +22,11 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String username; // ID
-
-    @Column(nullable = false)
-    private String password; // 비번
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true,
+            foreignKey = @ForeignKey(name = "fk_members_user"))
+    @JsonIgnore
+    private User user;
 
     @Column(nullable = false)
     private String name; // 이름
@@ -39,20 +40,17 @@ public class Member {
     @Column(nullable = false)
     private int number; // 번호
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
-
     @Builder
-    public Member(String username, String password, String name,
-                  int grade, int studentClass, int number, Role role) {
-        this.username = username;
-        this.password = password;
+    public Member(User user, String name, int grade, int studentClass, int number) {
+        this.user = user;
         this.name = name;
         this.grade = grade;
         this.studentClass = studentClass;
         this.number = number;
-        this.role = role;
+    }
+
+    public String getUsername() {
+        return user.getUsername();
     }
 
     // 정보 수정 메서드

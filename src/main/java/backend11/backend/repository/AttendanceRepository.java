@@ -12,11 +12,12 @@ import java.util.List;
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     Attendance findByUserIdAndDate(Long userId, LocalDate date);
 
+    long deleteAllByUser_Id(Long userId);
     Attendance findFirstByUserIdAndDateOrderByCheckInAtDesc(Long userId, LocalDate date);
 
     /**
      * 반 학생 전체를 기준으로 출석을 LEFT JOIN한다.
-     * Member와 User가 분리된 현재 모델에서는 두 엔티티의 username을 연결 키로 사용한다.
+     * Member가 참조하는 User를 기준으로 출석 기록을 연결한다.
      */
     @Query("""
             select new backend11.backend.dto.AttendanceJoinRow(
@@ -24,8 +25,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
                 a.id, a.checkInAt, a.checkOutAt, a.type, a.place
             )
             from Member m
-            left join User u on u.username = m.username
-            left join Attendance a on a.user = u and a.date = :date
+            left join Attendance a on a.user = m.user and a.date = :date
             where m.grade = :grade
               and m.studentClass = :studentClass
             order by m.number asc, a.checkInAt desc
@@ -43,8 +43,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
                 a.id, a.checkInAt, a.checkOutAt, a.type, a.place
             )
             from Member m
-            join User u on u.username = m.username
-            join Attendance a on a.user = u
+            join Attendance a on a.user = m.user
             where a.date = :date
               and upper(replace(replace(replace(a.place, '-', ''), ' ', ''), '실', '')) = :placeKey
             order by m.grade asc, m.studentClass asc, m.number asc, a.checkInAt desc

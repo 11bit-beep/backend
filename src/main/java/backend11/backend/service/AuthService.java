@@ -46,13 +46,11 @@ public class AuthService {
         userRepository.save(user);
 
         Member member = Member.builder()
-                .username(request.getUsername())
-                .password(encodedPassword)
+                .user(user)
                 .name(request.getName())
                 .grade(request.getGrade())
                 .studentClass(request.getStudentClass())
                 .number(request.getNumber())
-                .role(Role.USER)
                 .build();
 
         return memberRepository.save(member).getId();
@@ -98,8 +96,7 @@ public class AuthService {
     }
 
     private void checkDuplicateUsername(String username) {
-        if (userRepository.findByUsername(username).isPresent()
-                || memberRepository.findByUsername(username).isPresent()) {
+        if (userRepository.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException(
                     "이미 존재하는 아이디입니다.");
         }
