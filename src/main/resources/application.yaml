@@ -23,3 +23,6 @@ jwt:
 
 server:
   port: ${PORT:8080}
+
+app:
+  teacher-code: ${TEACHER_CODE}
