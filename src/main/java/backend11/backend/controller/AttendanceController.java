@@ -2,10 +2,12 @@ package backend11.backend.controller;
 
 import backend11.backend.domain.Attendance;
 import backend11.backend.dto.AttendanceLookupResponse;
+import backend11.backend.dto.AttendanceMeResponse;
 import backend11.backend.dto.AttendanceRequest;
 import backend11.backend.dto.AttendanceResponse;
 import backend11.backend.dto.AttendanceSummaryResponse;
 import backend11.backend.service.AttendanceLookupService;
+import backend11.backend.service.AttendanceMeService;
 import backend11.backend.service.AttendanceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -28,6 +30,7 @@ public class AttendanceController {
 
     private final AttendanceService attendanceService;
     private final AttendanceLookupService attendanceLookupService;
+    private final AttendanceMeService attendanceMeService;
 
     // 출석 체크 API
     @PostMapping("/check_in")
@@ -50,6 +53,16 @@ public class AttendanceController {
     public ResponseEntity<AttendanceResponse> checkOut(Authentication authentication) {
         Attendance attendance = attendanceService.checkOut(authentication.getName());
         return ResponseEntity.ok(AttendanceResponse.from(attendance));
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "내 출석 조회", description = "로그인한 사용자의 지정 날짜 출석 상태를 조회합니다. 날짜를 생략하면 오늘을 조회합니다.")
+    public ResponseEntity<AttendanceMeResponse> getMine(
+            Authentication authentication,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        return ResponseEntity.ok(attendanceMeService.getMine(authentication.getName(), date));
     }
 
     // 반별 출석 조회: 출석 기록이 없는 학생도 ABSENT로 포함한다.

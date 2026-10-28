@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
 @RequestMapping("/api/members")
@@ -24,22 +24,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 @SecurityRequirement(name = "bearerAuth")
 public class MemberController {
 
-    @Autowired
-    private MemberService memberService;
+    private final MemberService memberService;
+
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
 
     // 내 정보 가져오기
     @GetMapping("/me")
     @Operation(summary = "내 정보 조회", description = "로그인한 사용자의 회원 정보를 조회합니다.")
-    public MemberProfileResponse getMyMember(Authentication authentication) {
+    public ResponseEntity<MemberProfileResponse> getMyMember(Authentication authentication) {
         String username = authentication.getName();
         Member member = memberService.getMemberByUsername(username);
-        return MemberProfileResponse.from(member);
+        return ResponseEntity.ok(MemberProfileResponse.from(member));
     }
 
     // 내 정보 수정하기
     @PutMapping("/me")
     @Operation(summary = "내 정보 수정", description = "로그인한 사용자의 이름, 학년, 반, 번호를 수정합니다.")
-    public MemberProfileResponse updateMyMember(Authentication authentication, @Valid @RequestBody UpdateMemberRequest request) {
+    public ResponseEntity<MemberProfileResponse> updateMyMember(
+            Authentication authentication,
+            @Valid @RequestBody UpdateMemberRequest request
+    ) {
 
         String username = authentication.getName();
 
@@ -50,14 +56,14 @@ public class MemberController {
 
         Member updatedMember = memberService.updateMemberByUsername(username, name, grade, studentClass, number);
 
-        return MemberProfileResponse.from(updatedMember);
+        return ResponseEntity.ok(MemberProfileResponse.from(updatedMember));
     }
 
     @DeleteMapping("/me")
     @Operation(summary = "회원 탈퇴", description = "로그인한 사용자의 회원 정보를 삭제합니다.")
-    public String deleteMyMember(Authentication authentication) {
+    public ResponseEntity<String> deleteMyMember(Authentication authentication) {
         String username = authentication.getName();
         memberService.deleteMemberByUsername(username);
-        return "회원탈퇴가 완료되었습니다.";
+        return ResponseEntity.ok("회원탈퇴가 완료되었습니다.");
     }
 }

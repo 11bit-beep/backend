@@ -13,6 +13,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     Attendance findByUserIdAndDate(Long userId, LocalDate date);
 
     long deleteAllByUser_Id(Long userId);
+    Attendance findFirstByUserIdAndDateOrderByCheckInAtDesc(Long userId, LocalDate date);
 
     /**
      * 반 학생 전체를 기준으로 출석을 LEFT JOIN한다.
