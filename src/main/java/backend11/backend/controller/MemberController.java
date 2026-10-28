@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
 @RequestMapping("/api/members")
@@ -23,8 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 @SecurityRequirement(name = "bearerAuth")
 public class MemberController {
 
-    @Autowired
-    private MemberService memberService;
+    private final MemberService memberService;
+
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
 
     // 내 정보 가져오기
     @GetMapping("/me")
