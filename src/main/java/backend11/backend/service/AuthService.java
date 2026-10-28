@@ -32,13 +32,13 @@ public class AuthService {
     // 기존 학생 회원가입
     @Transactional
     public Long signup(SignupRequest request) {
-        checkDuplicateUsername(request.getUsername());
+        checkDuplicateUsername(request.username());
 
         String encodedPassword =
-                passwordEncoder.encode(request.getPassword());
+                passwordEncoder.encode(request.password());
 
         User user = User.builder()
-                .username(request.getUsername())
+                .username(request.username())
                 .password(encodedPassword)
                 .role(Role.STUDENT)
                 .build();
@@ -46,12 +46,12 @@ public class AuthService {
         userRepository.save(user);
 
         Member member = Member.builder()
-                .username(request.getUsername())
+                .username(request.username())
                 .password(encodedPassword)
-                .name(request.getName())
-                .grade(request.getGrade())
-                .studentClass(request.getStudentClass())
-                .number(request.getNumber())
+                .name(request.name())
+                .grade(request.grade())
+                .studentClass(request.studentClass())
+                .number(request.number())
                 .role(Role.USER)
                 .build();
 
@@ -61,16 +61,16 @@ public class AuthService {
     // 신규 선생님 회원가입
     @Transactional
     public Long teacherSignup(TeacherSignupRequest request) {
-        if (!teacherCode.equals(request.getTeacherCode())) {
+        if (!teacherCode.equals(request.teacherCode())) {
             throw new IllegalArgumentException("교사 코드가 올바르지 않습니다.");
         }
 
-        checkDuplicateUsername(request.getUsername());
+        checkDuplicateUsername(request.username());
 
         User teacher = User.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .name(request.getName())
+                .username(request.username())
+                .password(passwordEncoder.encode(request.password()))
+                .name(request.name())
                 .role(Role.TEACHER)
                 .build();
 
@@ -79,12 +79,12 @@ public class AuthService {
 
     // 학생과 선생님 공통 로그인
     public TokenResponse login(LoginRequest request) {
-        User user = userRepository.findByUsername(request.getUsername())
+        User user = userRepository.findByUsername(request.username())
                 .orElseThrow(() ->
                         new IllegalArgumentException("존재하지 않는 아이디입니다."));
 
         if (!passwordEncoder.matches(
-                request.getPassword(), user.getPassword())) {
+                request.password(), user.getPassword())) {
             throw new IllegalArgumentException(
                     "비밀번호가 일치하지 않습니다.");
         }

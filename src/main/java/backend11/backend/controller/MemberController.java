@@ -42,10 +42,10 @@ public class MemberController {
 
         String username = authentication.getName();
 
-        String name = request.getName();
-        int grade = request.getGrade();
-        int studentClass = request.getStudentClass();
-        int number = request.getNumber();
+        String name = request.name();
+        int grade = request.grade();
+        int studentClass = request.studentClass();
+        int number = request.number();
 
         Member updatedMember = memberService.updateMemberByUsername(username, name, grade, studentClass, number);
 

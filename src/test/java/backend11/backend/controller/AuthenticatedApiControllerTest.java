@@ -48,7 +48,7 @@ class AuthenticatedApiControllerTest {
 
     @Test
     void 로그인은_생성된_액세스_토큰을_응답한다() {
-        LoginRequest request = mock(LoginRequest.class);
+        LoginRequest request = new LoginRequest("student", "password");
         TokenResponse tokenResponse = new TokenResponse("access-token", "ROLE_STUDENT");
         when(authService.login(request)).thenReturn(tokenResponse);
 
@@ -60,13 +60,11 @@ class AuthenticatedApiControllerTest {
     @Test
     void 출석은_URL의_ID가_아닌_인증된_사용자명으로_처리한다() throws Exception {
         Authentication authentication = mock(Authentication.class);
-        AttendanceRequest request = mock(AttendanceRequest.class);
+        AttendanceRequest request = new AttendanceRequest("NORMAL", "LAB-1");
         Attendance attendance = new Attendance(
-                new User("student", "secret-password"), "NORMAL", "LAB-1"
+                User.builder().username("student").password("secret-password").build(), "NORMAL", "LAB-1"
         );
         when(authentication.getName()).thenReturn("student");
-        when(request.getType()).thenReturn("NORMAL");
-        when(request.getPlace()).thenReturn("LAB-1");
         when(attendanceService.checkIn("student", "NORMAL", "LAB-1")).thenReturn(attendance);
 
         ResponseEntity<AttendanceResponse> response = attendanceController.checkIn(authentication, request);
@@ -83,7 +81,7 @@ class AuthenticatedApiControllerTest {
     void 퇴실은_인증된_사용자명으로_처리한다() {
         Authentication authentication = mock(Authentication.class);
         Attendance attendance = new Attendance(
-                new User("student", "secret-password"), "NORMAL", "LAB-1"
+                User.builder().username("student").password("secret-password").build(), "NORMAL", "LAB-1"
         );
         attendance.updateCheckOut();
         when(authentication.getName()).thenReturn("student");

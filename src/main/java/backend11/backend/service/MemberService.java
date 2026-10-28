@@ -23,26 +23,26 @@ public class MemberService {
     public Long signUp(SignupRequest requestDto) {
 
         // 1) 아이디 중복
-        if (memberRepository.existsByUsername(requestDto.getUsername())) {
+        if (memberRepository.existsByUsername(requestDto.username())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 아이디입니다.");
         }
 
         // 2) 학년 + 반 + 번호 + 이름 중복
         if (memberRepository.existsByGradeAndStudentClassAndNumberAndName(
-                requestDto.getGrade(),
-                requestDto.getStudentClass(),
-                requestDto.getNumber(),
-                requestDto.getName())) {
+                requestDto.grade(),
+                requestDto.studentClass(),
+                requestDto.number(),
+                requestDto.name())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 등록된 학생 정보입니다.");
         }
 
         Member member = Member.builder()
-                .username(requestDto.getUsername())
-                .password(passwordEncoder.encode(requestDto.getPassword()))
-                .name(requestDto.getName())
-                .grade(requestDto.getGrade())
-                .studentClass(requestDto.getStudentClass())
-                .number(requestDto.getNumber())
+                .username(requestDto.username())
+                .password(passwordEncoder.encode(requestDto.password()))
+                .name(requestDto.name())
+                .grade(requestDto.grade())
+                .studentClass(requestDto.studentClass())
+                .number(requestDto.number())
                 .role(Role.USER)
                 .build();
 
