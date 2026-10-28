@@ -12,6 +12,8 @@ import java.util.List;
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     Attendance findByUserIdAndDate(Long userId, LocalDate date);
 
+    Attendance findFirstByUserIdAndDateOrderByCheckInAtDesc(Long userId, LocalDate date);
+
     /**
      * 반 학생 전체를 기준으로 출석을 LEFT JOIN한다.
      * Member와 User가 분리된 현재 모델에서는 두 엔티티의 username을 연결 키로 사용한다.
