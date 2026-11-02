@@ -15,3 +15,5 @@ jwt:
 
 app:
   teacher-code: test-only-teacher-code
+  cors:
+    allowed-origins: http://localhost:5500

@@ -1,6 +1,7 @@
 package backend11.backend.config;
 
 import backend11.backend.security.TokenProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +15,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -22,8 +24,18 @@ public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
 
-    public SecurityConfig(TokenProvider tokenProvider) {
+    // 허용 Origin 목록, application.yaml의 app.cors.allowed-origins(쉼표 구분)에서 주입함
+    private final List<String> allowedOrigins;
+
+    public SecurityConfig(
+            TokenProvider tokenProvider,
+            @Value("${app.cors.allowed-origins}") String[] allowedOrigins
+    ) {
         this.tokenProvider = tokenProvider;
+        this.allowedOrigins = Arrays.stream(allowedOrigins)
+                .map(String::trim)
+                .filter(origin -> !origin.isEmpty())
+                .toList();
     }
 
     @Bean
@@ -80,10 +92,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of(
-                "http://127.0.0.1:5500",
-                "http://localhost:5500"
-        ));
+        configuration.setAllowedOrigins(allowedOrigins);
 
         configuration.setAllowedMethods(List.of(
                 "GET", "POST", "PUT", "DELETE", "OPTIONS"
