@@ -3,6 +3,8 @@ package backend11.backend.service;
 import backend11.backend.domain.Attendance;
 import backend11.backend.domain.User;
 import backend11.backend.dto.AttendanceMeResponse;
+import backend11.backend.exception.CustomException;
+import backend11.backend.exception.ErrorCode;
 import backend11.backend.repository.AttendanceRepository;
 import backend11.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,7 @@ public class AttendanceMeService {
     public AttendanceMeResponse getMine(String username, LocalDate date) {
         LocalDate lookupDate = date == null ? LocalDate.now() : date;
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Attendance attendance = attendanceRepository.findFirstByUserIdAndDateOrderByCheckInAtDesc(
                 user.getId(), lookupDate

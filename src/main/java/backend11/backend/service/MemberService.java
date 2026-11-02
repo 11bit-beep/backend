@@ -2,15 +2,15 @@ package backend11.backend.service;
 
 import backend11.backend.domain.Member;
 import backend11.backend.domain.User;
+import backend11.backend.exception.CustomException;
+import backend11.backend.exception.ErrorCode;
 import backend11.backend.repository.AttendanceRepository;
 import backend11.backend.repository.MemberRepository;
 import backend11.backend.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -23,15 +23,13 @@ public class MemberService {
     // 내 정보 조회 (id)
     public Member getMember(Long id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     // 내 정보 조회 (아이디)
     public Member getMemberByUsername(String username) {
         return memberRepository.findByUser_Username(username)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     // 내 정보 수정 (id)
@@ -46,8 +44,7 @@ public class MemberService {
     @Transactional
     public void deleteAccountByUsername(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         attendanceRepository.deleteAllByUser_Id(user.getId());
         memberRepository.findByUser_Username(username).ifPresent(memberRepository::delete);
         memberRepository.flush();
@@ -72,7 +69,7 @@ public class MemberService {
                 .isPresent();
 
         if (taken) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 등록된 학생 정보입니다.");
+            throw new CustomException(ErrorCode.MEMBER_IDENTITY_ALREADY_REGISTERED);
         }
     }
 }

@@ -8,6 +8,8 @@ import backend11.backend.dto.AttendancePlaceSummary;
 import backend11.backend.dto.AttendanceStatus;
 import backend11.backend.dto.AttendanceStudentResponse;
 import backend11.backend.dto.AttendanceSummaryResponse;
+import backend11.backend.exception.CustomException;
+import backend11.backend.exception.ErrorCode;
 import backend11.backend.repository.AttendanceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -145,7 +147,7 @@ public class AttendanceLookupService {
 
     private void validateClassScope(int grade, int studentClass) {
         if (grade <= 0 || studentClass <= 0) {
-            throw new IllegalArgumentException("학년과 반은 1 이상이어야 합니다.");
+            throw new CustomException(ErrorCode.INVALID_CLASS_SCOPE);
         }
     }
 }
