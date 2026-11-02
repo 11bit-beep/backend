@@ -99,14 +99,24 @@ class AuthenticatedApiControllerTest {
     }
 
     @Test
-    void 개발용_프론트엔드_주소만_CORS로_허용한다() {
-        SecurityConfig securityConfig = new SecurityConfig(mock(JwtTokenProvider.class));
+    void 설정된_프론트엔드_주소만_CORS로_허용한다() {
+        SecurityConfig securityConfig = new SecurityConfig(
+                mock(JwtTokenProvider.class),
+                new String[]{
+                        "https://11bit.vercel.app",
+                        " http://127.0.0.1:5500 ",
+                        "http://localhost:5500",
+                        ""
+                }
+        );
         CorsConfigurationSource source = securityConfig.corsConfigurationSource();
         CorsConfiguration configuration = source.getCorsConfiguration(
                 new MockHttpServletRequest("OPTIONS", "/api/auth/login")
         );
 
         assertThat(configuration).isNotNull();
+        assertThat(configuration.checkOrigin("https://11bit.vercel.app"))
+                .isEqualTo("https://11bit.vercel.app");
         assertThat(configuration.checkOrigin("http://127.0.0.1:5500"))
                 .isEqualTo("http://127.0.0.1:5500");
         assertThat(configuration.checkOrigin("http://localhost:5500"))
