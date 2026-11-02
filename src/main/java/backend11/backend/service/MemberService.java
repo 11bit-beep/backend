@@ -1,13 +1,13 @@
 package backend11.backend.service;
 
 import backend11.backend.domain.Member;
-import backend11.backend.domain.Role;
-import backend11.backend.dto.SignupRequest;
+import backend11.backend.domain.User;
+import backend11.backend.repository.AttendanceRepository;
 import backend11.backend.repository.MemberRepository;
+import backend11.backend.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,37 +17,8 @@ import org.springframework.web.server.ResponseStatusException;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
-
-    @Transactional
-    public Long signUp(SignupRequest requestDto) {
-
-        // 1) 아이디 중복
-        if (memberRepository.existsByUsername(requestDto.username())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 아이디입니다.");
-        }
-
-        // 2) 학년 + 반 + 번호 + 이름 중복
-        if (memberRepository.existsByGradeAndStudentClassAndNumberAndName(
-                requestDto.grade(),
-                requestDto.studentClass(),
-                requestDto.number(),
-                requestDto.name())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 등록된 학생 정보입니다.");
-        }
-
-        Member member = Member.builder()
-                .username(requestDto.username())
-                .password(passwordEncoder.encode(requestDto.password()))
-                .name(requestDto.name())
-                .grade(requestDto.grade())
-                .studentClass(requestDto.studentClass())
-                .number(requestDto.number())
-                .role(Role.USER)
-                .build();
-
-        return memberRepository.save(member).getId();
-    }
+    private final UserRepository userRepository;
+    private final AttendanceRepository attendanceRepository;
 
     // 내 정보 조회 (id)
     public Member getMember(Long id) {
@@ -58,7 +29,7 @@ public class MemberService {
 
     // 내 정보 조회 (아이디)
     public Member getMemberByUsername(String username) {
-        return memberRepository.findByUsername(username)
+        return memberRepository.findByUser_Username(username)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
     }
@@ -71,11 +42,16 @@ public class MemberService {
         member.updateInfo(name, grade, studentClass, number);
         return member;
     }
-    // 회원 탈퇴 (아이디)
+    // 로그인 계정과 연결된 회원 정보 및 출석 기록을 함께 삭제한다.
     @Transactional
-    public void deleteMemberByUsername(String username) {
-        Member member = getMemberByUsername(username);
-        memberRepository.delete(member);
+    public void deleteAccountByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
+        attendanceRepository.deleteAllByUser_Id(user.getId());
+        memberRepository.findByUser_Username(username).ifPresent(memberRepository::delete);
+        memberRepository.flush();
+        userRepository.delete(user);
     }
 
     // 내 정보 수정 (아이디)

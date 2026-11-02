@@ -62,7 +62,8 @@ class AuthenticatedApiControllerTest {
         Authentication authentication = mock(Authentication.class);
         AttendanceRequest request = new AttendanceRequest("NORMAL", "LAB-1");
         Attendance attendance = new Attendance(
-                User.builder().username("student").password("secret-password").build(), "NORMAL", "LAB-1"
+                User.builder().username("student").password("secret-password").build(),
+                "NORMAL", "LAB-1"
         );
         when(authentication.getName()).thenReturn("student");
         when(attendanceService.checkIn("student", "NORMAL", "LAB-1")).thenReturn(attendance);
@@ -81,7 +82,8 @@ class AuthenticatedApiControllerTest {
     void 퇴실은_인증된_사용자명으로_처리한다() {
         Authentication authentication = mock(Authentication.class);
         Attendance attendance = new Attendance(
-                User.builder().username("student").password("secret-password").build(), "NORMAL", "LAB-1"
+                User.builder().username("student").password("secret-password").build(),
+                "NORMAL", "LAB-1"
         );
         attendance.updateCheckOut();
         when(authentication.getName()).thenReturn("student");
