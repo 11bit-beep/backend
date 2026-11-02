@@ -1,5 +1,6 @@
 package backend11.backend.service;
 
+import backend11.backend.domain.AttendancePlace;
 import backend11.backend.dto.AttendanceJoinRow;
 import backend11.backend.dto.AttendanceClassSummary;
 import backend11.backend.dto.AttendanceLookupResponse;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +26,6 @@ public class AttendanceLookupService {
 
     private static final int SUMMARY_GRADE = 1;
     private static final List<Integer> SUMMARY_CLASSES = List.of(1, 2, 3, 4);
-    private static final List<String> SUMMARY_PLACES = List.of("LAB-1", "LAB-2", "LAB-3");
 
     private final AttendanceRepository attendanceRepository;
 
@@ -39,10 +40,10 @@ public class AttendanceLookupService {
                 ))
                 .toList();
 
-        List<AttendancePlaceSummary> places = SUMMARY_PLACES.stream()
+        List<AttendancePlaceSummary> places = Arrays.stream(AttendancePlace.values())
                 .map(place -> new AttendancePlaceSummary(
-                        place,
-                        getByPlace(place, lookupDate).attendedCount()
+                        place.getLabel(),
+                        getByPlace(place.getLabel(), lookupDate).attendedCount()
                 ))
                 .toList();
 
