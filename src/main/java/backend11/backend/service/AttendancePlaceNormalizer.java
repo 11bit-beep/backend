@@ -1,6 +1,8 @@
 package backend11.backend.service;
 
 import backend11.backend.domain.AttendancePlace;
+import backend11.backend.exception.CustomException;
+import backend11.backend.exception.ErrorCode;
 
 /** 출석 장소의 여러 표기를 API에서 사용하는 한 가지 형식으로 맞춘다. */
 public final class AttendancePlaceNormalizer {
@@ -24,7 +26,7 @@ public final class AttendancePlaceNormalizer {
 
     private static void validate(String place) {
         if (place == null || place.isBlank()) {
-            throw new IllegalArgumentException("출석 실을 입력해 주세요.");
+            throw new CustomException(ErrorCode.PLACE_REQUIRED);
         }
     }
 }

@@ -24,6 +24,13 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", message));
     }
 
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<Map<String, String>> handleCustom(CustomException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(Map.of("code", errorCode.name(), "message", errorCode.getMessage()));
+    }
+
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, String>> handleResponseStatus(ResponseStatusException e) {
         String message = e.getReason() != null ? e.getReason() : "요청을 처리할 수 없습니다.";

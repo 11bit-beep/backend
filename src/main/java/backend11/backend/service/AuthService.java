@@ -8,6 +8,8 @@ import backend11.backend.dto.LoginRequest;
 import backend11.backend.dto.SignupRequest;
 import backend11.backend.dto.TeacherSignupRequest;
 import backend11.backend.dto.TokenResponse;
+import backend11.backend.exception.CustomException;
+import backend11.backend.exception.ErrorCode;
 import backend11.backend.repository.MemberRepository;
 import backend11.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +62,7 @@ public class AuthService {
     @Transactional
     public Long teacherSignup(TeacherSignupRequest request) {
         if (!teacherCode.equals(request.teacherCode())) {
-            throw new IllegalArgumentException("교사 코드가 올바르지 않습니다.");
+            throw new CustomException(ErrorCode.INVALID_TEACHER_CODE);
         }
 
         checkDuplicateUsername(request.username());
@@ -78,13 +80,11 @@ public class AuthService {
     // 학생과 선생님 공통 로그인
     public TokenResponse login(LoginRequest request) {
         User user = userRepository.findByUsername(request.username())
-                .orElseThrow(() ->
-                        new IllegalArgumentException("존재하지 않는 아이디입니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.USERNAME_NOT_FOUND));
 
         if (!passwordEncoder.matches(
                 request.password(), user.getPassword())) {
-            throw new IllegalArgumentException(
-                    "비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
         }
 
         String accessToken = tokenProvider.createToken(
@@ -97,8 +97,7 @@ public class AuthService {
 
     private void checkDuplicateUsername(String username) {
         if (userRepository.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException(
-                    "이미 존재하는 아이디입니다.");
+            throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
         }
     }
 }
