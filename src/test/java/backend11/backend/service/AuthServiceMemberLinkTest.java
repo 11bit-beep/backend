@@ -41,13 +41,7 @@ class AuthServiceMemberLinkTest {
 
     @Test
     void 학생_회원가입은_저장한_User를_Member에_연결한다() {
-        SignupRequest request = org.mockito.Mockito.mock(SignupRequest.class);
-        when(request.getUsername()).thenReturn("student");
-        when(request.getPassword()).thenReturn("password");
-        when(request.getName()).thenReturn("학생");
-        when(request.getGrade()).thenReturn(1);
-        when(request.getStudentClass()).thenReturn(2);
-        when(request.getNumber()).thenReturn(3);
+        SignupRequest request = new SignupRequest("학생", "student", "password", 1, 2, 3);
         when(userRepository.findByUsername("student")).thenReturn(Optional.empty());
         when(passwordEncoder.encode("password")).thenReturn("encoded-password");
         when(memberRepository.save(any(Member.class))).thenAnswer(invocation -> invocation.getArgument(0));

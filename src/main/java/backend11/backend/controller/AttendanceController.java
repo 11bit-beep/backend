@@ -41,8 +41,8 @@ public class AttendanceController {
     ) {
         Attendance attendance = attendanceService.checkIn(
                 authentication.getName(),
-                request.getType(),
-                request.getPlace()
+                request.type(),
+                request.place()
         );
         return ResponseEntity.ok(AttendanceResponse.from(attendance));
     }
