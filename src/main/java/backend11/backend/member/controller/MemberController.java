@@ -1,0 +1,70 @@
+package backend11.backend.member.controller;
+
+import backend11.backend.member.domain.Member;
+import backend11.backend.member.dto.MemberProfileResponse;
+import backend11.backend.member.dto.UpdateMemberRequest;
+import backend11.backend.member.service.MemberService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+
+@RestController
+@RequestMapping("/api/members")
+@Tag(name = "회원", description = "내 정보 조회, 수정, 탈퇴 API")
+@SecurityRequirement(name = "bearerAuth")
+public class MemberController {
+
+    private final MemberService memberService;
+
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
+
+    // 내 정보 가져오기
+    @GetMapping("/me")
+    @Operation(summary = "내 정보 조회", description = "로그인한 사용자의 회원 정보를 조회합니다.")
+    public ResponseEntity<MemberProfileResponse> getMyMember(Authentication authentication) {
+        String username = authentication.getName();
+        Member member = memberService.getMemberByUsername(username);
+        return ResponseEntity.ok(MemberProfileResponse.from(member));
+    }
+
+    // 내 정보 수정하기
+    @PutMapping("/me")
+    @Operation(summary = "내 정보 수정", description = "로그인한 사용자의 이름, 학년, 반, 번호를 수정합니다.")
+    public ResponseEntity<MemberProfileResponse> updateMyMember(
+            Authentication authentication,
+            @Valid @RequestBody UpdateMemberRequest request
+    ) {
+
+        String username = authentication.getName();
+
+        String name = request.name();
+        int grade = request.grade();
+        int studentClass = request.studentClass();
+        int number = request.number();
+
+        Member updatedMember = memberService.updateMemberByUsername(username, name, grade, studentClass, number);
+
+        return ResponseEntity.ok(MemberProfileResponse.from(updatedMember));
+    }
+
+    @DeleteMapping("/me")
+    @Operation(summary = "회원 탈퇴", description = "로그인한 계정과 연결된 회원 정보 및 출석 기록을 삭제합니다.")
+    public ResponseEntity<String> deleteMyMember(Authentication authentication) {
+        String username = authentication.getName();
+        memberService.deleteAccountByUsername(username);
+        return ResponseEntity.ok("회원탈퇴가 완료되었습니다.");
+    }
+}
