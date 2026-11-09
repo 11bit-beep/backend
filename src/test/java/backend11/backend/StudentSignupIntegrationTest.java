@@ -1,14 +1,15 @@
 package backend11.backend;
 
-import backend11.backend.dto.SignupRequest;
-import backend11.backend.service.AuthService;
+import backend11.backend.auth.dto.SignupRequest;
+import backend11.backend.auth.service.AuthService;
+import backend11.backend.common.exception.CustomException;
+import backend11.backend.common.exception.ErrorCode;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import backend11.backend.exception.CustomException;
-import backend11.backend.exception.ErrorCode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
