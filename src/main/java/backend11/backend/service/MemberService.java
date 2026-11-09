@@ -20,26 +20,12 @@ public class MemberService {
     private final UserRepository userRepository;
     private final AttendanceRepository attendanceRepository;
 
-    // 내 정보 조회 (id)
-    public Member getMember(Long id) {
-        return memberRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-    }
-
     // 내 정보 조회 (아이디)
     public Member getMemberByUsername(String username) {
         return memberRepository.findByUser_Username(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    // 내 정보 수정 (id)
-    @Transactional
-    public Member updateMember(Long id, String name, int grade, int studentClass, int number) {
-        Member member = getMember(id);
-        validateIdentityNotTaken(member, name, grade, studentClass, number);
-        member.updateInfo(name, grade, studentClass, number);
-        return member;
-    }
     // 로그인 계정과 연결된 회원 정보 및 출석 기록을 함께 삭제한다.
     @Transactional
     public void deleteAccountByUsername(String username) {
