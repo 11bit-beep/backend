@@ -23,8 +23,7 @@ public class AttendanceService {
 
     // 출석하기
     public Attendance checkIn(String username, String type, String place) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomException(ErrorCode.ACCOUNT_NOT_FOUND));
+        User user = findUser(username);
 
         // 오늘 이미 출석했는지 확인
         if (attendanceRepository.findByUserIdAndDate(user.getId(), LocalDate.now()) != null) {
@@ -39,8 +38,7 @@ public class AttendanceService {
 
     // 퇴실하기
     public Attendance checkOut(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomException(ErrorCode.ACCOUNT_NOT_FOUND));
+        User user = findUser(username);
 
         Attendance attendance = attendanceRepository.findByUserIdAndDate(
                 user.getId(),
@@ -58,5 +56,10 @@ public class AttendanceService {
         attendance.updateCheckOut();
 
         return attendance;
+    }
+
+    private User findUser(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
 }
