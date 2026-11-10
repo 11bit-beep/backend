@@ -1,8 +1,9 @@
 package backend11.backend;
 
-import backend11.backend.domain.User;
-import backend11.backend.repository.AttendanceRepository;
-import backend11.backend.repository.UserRepository;
+import backend11.backend.attendance.repository.AttendanceRepository;
+import backend11.backend.user.domain.User;
+import backend11.backend.user.repository.UserRepository;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

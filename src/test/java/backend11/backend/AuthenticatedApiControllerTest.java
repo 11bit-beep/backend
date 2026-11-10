@@ -1,0 +1,133 @@
+package backend11.backend;
+
+import backend11.backend.attendance.controller.AttendanceController;
+import backend11.backend.attendance.domain.Attendance;
+import backend11.backend.attendance.dto.AttendanceRequest;
+import backend11.backend.attendance.dto.AttendanceResponse;
+import backend11.backend.attendance.service.AttendanceLookupService;
+import backend11.backend.attendance.service.AttendanceService;
+import backend11.backend.auth.controller.AuthController;
+import backend11.backend.auth.dto.LoginRequest;
+import backend11.backend.auth.dto.TokenResponse;
+import backend11.backend.auth.jwt.JwtTokenProvider;
+import backend11.backend.auth.service.AuthService;
+import backend11.backend.common.config.SecurityConfig;
+import backend11.backend.user.domain.User;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class AuthenticatedApiControllerTest {
+
+    @Mock
+    private AuthService authService;
+
+    @Mock
+    private AttendanceService attendanceService;
+
+    @Mock
+    private AttendanceLookupService attendanceLookupService;
+
+    @InjectMocks
+    private AuthController authController;
+
+    @InjectMocks
+    private AttendanceController attendanceController;
+
+    @Test
+    void 로그인은_생성된_액세스_토큰을_응답한다() {
+        LoginRequest request = new LoginRequest("student", "password");
+        TokenResponse tokenResponse = new TokenResponse("access-token", "ROLE_STUDENT");
+        when(authService.login(request)).thenReturn(tokenResponse);
+
+        ResponseEntity<TokenResponse> response = authController.login(request);
+
+        assertThat(response.getBody()).isSameAs(tokenResponse);
+    }
+
+    @Test
+    void 출석은_URL의_ID가_아닌_인증된_사용자명으로_처리한다() throws Exception {
+        Authentication authentication = mock(Authentication.class);
+        AttendanceRequest request = new AttendanceRequest("NORMAL", "LAB-1");
+        Attendance attendance = new Attendance(
+                User.builder().username("student").password("secret-password").build(),
+                "NORMAL", "LAB-1"
+        );
+        when(authentication.getName()).thenReturn("student");
+        when(attendanceService.checkIn("student", "NORMAL", "LAB-1")).thenReturn(attendance);
+
+        ResponseEntity<AttendanceResponse> response = attendanceController.checkIn(authentication, request);
+
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().user().username()).isEqualTo("student");
+        String json = new ObjectMapper().findAndRegisterModules()
+                .writeValueAsString(response.getBody());
+        assertThat(json).doesNotContain("password", "secret-password");
+        verify(attendanceService).checkIn("student", "NORMAL", "LAB-1");
+    }
+
+    @Test
+    void 퇴실은_인증된_사용자명으로_처리한다() {
+        Authentication authentication = mock(Authentication.class);
+        Attendance attendance = new Attendance(
+                User.builder().username("student").password("secret-password").build(),
+                "NORMAL", "LAB-1"
+        );
+        attendance.updateCheckOut();
+        when(authentication.getName()).thenReturn("student");
+        when(attendanceService.checkOut("student")).thenReturn(attendance);
+
+        ResponseEntity<AttendanceResponse> response = attendanceController.checkOut(authentication);
+
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().checkOutAt()).isNotNull();
+        verify(attendanceService).checkOut("student");
+    }
+
+    @Test
+    void 설정된_프론트엔드_주소만_CORS로_허용한다() {
+        SecurityConfig securityConfig = new SecurityConfig(
+                mock(JwtTokenProvider.class),
+                new String[]{
+                        "https://11bit.vercel.app",
+                        " http://127.0.0.1:5500 ",
+                        "http://localhost:5500",
+                        ""
+                }
+        );
+        CorsConfigurationSource source = securityConfig.corsConfigurationSource();
+        CorsConfiguration configuration = source.getCorsConfiguration(
+                new MockHttpServletRequest("OPTIONS", "/api/auth/login")
+        );
+
+        assertThat(configuration).isNotNull();
+        assertThat(configuration.checkOrigin("https://11bit.vercel.app"))
+                .isEqualTo("https://11bit.vercel.app");
+        assertThat(configuration.checkOrigin("http://127.0.0.1:5500"))
+                .isEqualTo("http://127.0.0.1:5500");
+        assertThat(configuration.checkOrigin("http://localhost:5500"))
+                .isEqualTo("http://localhost:5500");
+        assertThat(configuration.checkOrigin("https://untrusted.example"))
+                .isNull();
+        assertThat(configuration.getAllowedMethods())
+                .containsExactlyInAnyOrder("GET", "POST", "PUT", "DELETE", "OPTIONS");
+        assertThat(configuration.getAllowedHeaders())
+                .containsExactlyInAnyOrder("Authorization", "Content-Type", "Accept");
+        assertThat(configuration.getAllowCredentials()).isTrue();
+    }
+}
