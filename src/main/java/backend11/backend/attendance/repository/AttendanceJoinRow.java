@@ -1,16 +1,15 @@
-package backend11.backend.attendance.dto;
-
-import backend11.backend.attendance.domain.AttendanceStatus;
+package backend11.backend.attendance.repository;
 
 import java.time.LocalDateTime;
 
-public record AttendanceStudentResponse(
+/** 학생 명단과 출석 기록을 LEFT JOIN한 결과 한 행을 담는다. */
+public record AttendanceJoinRow(
         Long memberId,
         String name,
         int grade,
         int studentClass,
         int number,
-        AttendanceStatus status,
+        Long attendanceId,
         LocalDateTime checkInAt,
         LocalDateTime checkOutAt,
         String type,

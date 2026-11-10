@@ -1,7 +1,7 @@
 package backend11.backend.attendance.service;
 
 import backend11.backend.attendance.domain.AttendanceStatus;
-import backend11.backend.attendance.dto.AttendanceJoinRow;
+import backend11.backend.attendance.repository.AttendanceJoinRow;
 import backend11.backend.attendance.dto.AttendanceLookupResponse;
 import backend11.backend.attendance.dto.AttendanceSummaryResponse;
 import backend11.backend.attendance.repository.AttendanceRepository;

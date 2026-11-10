@@ -1,7 +1,6 @@
 package backend11.backend.attendance.repository;
 
 import backend11.backend.attendance.domain.Attendance;
-import backend11.backend.attendance.dto.AttendanceJoinRow;
 import backend11.backend.member.domain.Member;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,7 +23,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
      * Member가 참조하는 User를 기준으로 출석 기록을 연결한다.
      */
     @Query("""
-            select new backend11.backend.attendance.dto.AttendanceJoinRow(
+            select new backend11.backend.attendance.repository.AttendanceJoinRow(
                 m.id, m.name, m.grade, m.studentClass, m.number,
                 a.id, a.checkInAt, a.checkOutAt, a.type, a.place
             )
@@ -42,7 +41,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     /** 지정한 날짜와 실(place)에 출석 기록이 있는 모든 학생을 조회한다. */
     @Query("""
-            select new backend11.backend.attendance.dto.AttendanceJoinRow(
+            select new backend11.backend.attendance.repository.AttendanceJoinRow(
                 m.id, m.name, m.grade, m.studentClass, m.number,
                 a.id, a.checkInAt, a.checkOutAt, a.type, a.place
             )
