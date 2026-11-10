@@ -2,12 +2,12 @@ package backend11.backend.attendance.service;
 
 import backend11.backend.attendance.domain.AttendancePlace;
 import backend11.backend.attendance.domain.AttendanceStatus;
-import backend11.backend.attendance.dto.AttendanceClassSummary;
-import backend11.backend.attendance.dto.AttendanceJoinRow;
 import backend11.backend.attendance.dto.AttendanceLookupResponse;
-import backend11.backend.attendance.dto.AttendancePlaceSummary;
-import backend11.backend.attendance.dto.AttendanceStudentResponse;
+import backend11.backend.attendance.dto.AttendanceLookupResponse.AttendanceStudentResponse;
 import backend11.backend.attendance.dto.AttendanceSummaryResponse;
+import backend11.backend.attendance.dto.AttendanceSummaryResponse.AttendanceClassSummary;
+import backend11.backend.attendance.dto.AttendanceSummaryResponse.AttendancePlaceSummary;
+import backend11.backend.attendance.repository.AttendanceJoinRow;
 import backend11.backend.attendance.repository.AttendanceRepository;
 import backend11.backend.common.exception.CustomException;
 import backend11.backend.common.exception.ErrorCode;
